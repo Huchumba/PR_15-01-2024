@@ -1,4 +1,5 @@
 ﻿using Microsoft.EntityFrameworkCore;
+using WebApplication1.Comments;
 using WebApplication1.News;
 using WebApplication1.Users;
 
@@ -27,5 +28,6 @@ namespace WebApplication1
         public DbSet<UserEntity> Users => Set<UserEntity>();
 
         public DbSet<NewsEntity> News => Set<NewsEntity>();
+        public DbSet<CommentsEntity> Comments => Set<CommentsEntity>();
     }
 }

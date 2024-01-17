@@ -120,7 +120,7 @@ namespace WebApplication1.Comments
 
                 try
                 {
-                    var editable = await _context.News.Include(n => n.Author).FirstAsync(n => n.Id == id);
+                    var editable = await _context.Comments.Include(n => n.Author).FirstAsync(n => n.Id == id);
 
                     if (editable == null)
                     {
@@ -128,7 +128,7 @@ namespace WebApplication1.Comments
 
                     }
 
-                    //editable.Title = item.NewsId;
+                    editable.NewsId = item.NewsId;
                     editable.Content = item.Content;
 
                     _context.Update(editable);
@@ -163,14 +163,14 @@ namespace WebApplication1.Comments
         [ProducesResponseType(404)]
         public async Task<IActionResult> DeleteConfirmed(int id)
         {
-            if (_context.News == null)
+            if (_context.Comments == null)
             {
                 return Problem("Entity set 'DatabaseContext.news'  is null.");
             }
-            var item = await _context.News.FindAsync(id);
+            var item = await _context.Comments.FindAsync(id);
             if (item != null)
             {
-                _context.News.Remove(item);
+                _context.Comments.Remove(item);
                 await _context.SaveChangesAsync();
                 return Accepted();
             }

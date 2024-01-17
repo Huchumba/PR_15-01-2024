@@ -54,7 +54,7 @@ namespace WebApplication1.News
 
             var item = await _context.News.Include(n => n.Author).FirstOrDefaultAsync(n => n.Id == id);
 
-            return Ok(_mapper.Map<NewsDTO[]>(item));   //#
+            return Ok(_mapper.Map<NewsDTO>(item));   //#
 
             //return item != null ? Ok(item) : NotFound();
         }

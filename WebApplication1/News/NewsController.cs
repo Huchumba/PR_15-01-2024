@@ -72,11 +72,15 @@ namespace WebApplication1.News
         {
             if (ModelState.IsValid)
             {
+                if (User.Identity?.Name == null) return Forbid();
+
+                int userId = int.Parse(User.Identity.Name);
+
                 var created = new NewsEntity
                 {
                     Title = item.Title,
                     Content = item.Content,
-                    AuthorId = 1 //временное решение для указания авторства
+                    AuthorId = userId //временное решение для указания авторства
                 };
 
                 _context.Add(created);
@@ -86,6 +90,7 @@ namespace WebApplication1.News
 
                 return CreatedAtAction(nameof(Details), new { id = created.Id }, created);
             }
+
             return BadRequest();
         }
         /// <summary>
@@ -117,11 +122,13 @@ namespace WebApplication1.News
                 {
                     var editable = await _context.News.Include(n => n.Author).FirstAsync(n => n.Id == id);
 
-                    if (editable == null)
-                    {
-                        return NotFound();
+                    if (editable == null) return NotFound();
 
-                    }
+                    if (User.Identity?.Name == null) return Forbid();
+
+                    int userId = int.Parse(User.Identity.Name);
+
+                    if (editable.AuthorId != userId) return Forbid();
 
                     editable.Title = item.Title;
                     editable.Content = item.Content;

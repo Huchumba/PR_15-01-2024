@@ -3,6 +3,7 @@ using Microsoft.OpenApi.Models;
 using System.ComponentModel;
 using System.Reflection;
 using WebApplication1;
+using WebApplication1.Sessions;
 
 var builder = WebApplication.CreateBuilder(args);
 builder.Services.AddDbContext<DatabaseContext>(options => options.UseSqlite("DataSource = AppData/database.sqlite"));
@@ -13,6 +14,11 @@ builder.Services.AddAutoMapper(typeof(AppMappingProfile));
 builder.Services.AddControllers();
 // Learn more about configuring Swagger/OpenAPI at https://aka.ms/aspnetcore/swashbuckle
 builder.Services.AddEndpointsApiExplorer();
+
+builder.Services
+    .AddAuthentication(AuthenticationHandlerOptions.DefaultScheme)
+    .AddScheme<AuthenticationHandlerOptions, AuthenticationHandler>(AuthenticationHandlerOptions.DefaultScheme, null);
+
 builder.Services.AddSwaggerGen(options =>
 {
     options.SwaggerDoc("v1", new OpenApiInfo
@@ -36,6 +42,30 @@ builder.Services.AddSwaggerGen(options =>
     // using System.Reflection;
     var xmlFilename = $"{Assembly.GetExecutingAssembly().GetName().Name}.xml";
     options.IncludeXmlComments(Path.Combine(AppContext.BaseDirectory, xmlFilename));
+
+    options.AddSecurityDefinition("Bearer", new OpenApiSecurityScheme
+    {
+        In = ParameterLocation.Header,
+        Description = "”кажите токен, полученный через POST /auth",
+        Name = "Authorization",
+        Type = SecuritySchemeType.Http,
+        BearerFormat = "UUID",
+        Scheme = "Bearer"
+    });
+    options.AddSecurityRequirement(new OpenApiSecurityRequirement
+    {
+        {
+            new OpenApiSecurityScheme
+            {
+                Reference = new OpenApiReference
+                {
+                    Type = ReferenceType.SecurityScheme,
+                    Id = "Bearer"
+                }
+            },
+            Array.Empty<string>()
+        }
+    });
 });
 
 var app = builder.Build();
@@ -46,9 +76,6 @@ if (app.Environment.IsDevelopment())
     app.UseSwagger();
     app.UseSwaggerUI();
 }
-
-app.UseAuthentication();
-app.UseAuthorization();
 
 app.MapControllers();
 

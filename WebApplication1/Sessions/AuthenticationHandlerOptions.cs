@@ -35,29 +35,29 @@ namespace WebApplication1.Sessions
             }
             string token = Request.Headers[Options.TokenHeaderName]!.First()!.Split(" ").Last();
 
-            var sessionToken = await _database.SessionTokens
-                .Include(t => t.Session)
-                .ThenInclude(t => t.User)
-                .Where(t => t.Token == Guid.Parse(token) && t.Type == SessionTokenType.Access)
-                .FirstOrDefaultAsync();
+             var sessionToken = await _database.SessionTokens
+                 .Include(t => t.Session)
+                 .ThenInclude(t => t.User)
+                 .Where(t => t.Token == Guid.Parse(token) && t.Type == SessionTokenType.Access)
+                 .FirstOrDefaultAsync();
 
 
-            if (sessionToken == null)
-            {
-                return AuthenticateResult.Fail("Session not found");
-            }
+             if (sessionToken == null)
+             {
+                 return AuthenticateResult.Fail("Session not found");
+             }
 
-            var user = sessionToken.Session.User;
+             var user = sessionToken.Session.User;
 
-            var claims = new List<Claim>
-            {
-                new Claim(ClaimTypes.Name, user.Id.ToString()),
-            };
+             var claims = new List<Claim>
+             {
+                 new Claim(ClaimTypes.Name, user.Id.ToString()),
+             };
 
-            var identity = new ClaimsIdentity(claims, this.Scheme.Name);
-            var principal = new ClaimsPrincipal(identity);
+             var identity = new ClaimsIdentity(claims, this.Scheme.Name);
+             var principal = new ClaimsPrincipal(identity);
 
-            return AuthenticateResult.Success(new(principal, this.Scheme.Name));
+             return AuthenticateResult.Success(new(principal, this.Scheme.Name));
         }
     }
 

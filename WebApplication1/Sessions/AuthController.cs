@@ -112,5 +112,52 @@ namespace WebApplication1.Sessions
             }
             return BadRequest();
         }
+
+        /// <summary>
+        /// Регистрация
+        /// </summary>
+        /// <response code="200">Регистрация выполнена.</response>
+        /// <response code="400">Некорректный запрос.</response>
+        [HttpPost("register")]
+        public async Task<ActionResult<TokenDTO>> Login([FromBody] UserCreateDTO user, [FromHeader(Name = "User-Agent")] string userAgent)
+        {
+            if (ModelState.IsValid)
+            {
+
+                var created = new UserEntity
+                {
+                    Name = user.Name,
+                    Family = user.Family,
+                    Patronymic = user.Patronymic,
+                    Email = user.Email,
+                    Password = user.Password
+                };
+
+                _context.Add(created);
+                await _context.SaveChangesAsync();
+
+                SessionEntity session = new()
+                {
+                    UserAgent = userAgent,
+                    User = created,
+                };
+
+                SessionTokenEntity token = new()
+                {
+                    Session = session,
+                    Token = Guid.NewGuid(),
+                    Type = SessionTokenType.Access
+                };
+                ///Добавляем в БД только токен т.к. сессия уже вложена в него
+                _context.Add(token);
+
+                await _context.SaveChangesAsync();
+
+                return _mapper.Map<TokenDTO>(token);
+            }
+
+            return BadRequest();
+        }
+
     }
 }

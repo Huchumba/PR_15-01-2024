@@ -5,11 +5,11 @@ namespace WebApplication1.News
     public class NewsCreateDTO
     {
         [Required]
-        [MinLength(10)]
+        //[MinLength(10)]
         public string Title { get; set; }
 
         [Required]
-        [MinLength(30)]
+        [MinLength(10)]
         public string Content { get; set; }
     }
 }

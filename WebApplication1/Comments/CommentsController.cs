@@ -77,11 +77,15 @@ namespace WebApplication1.Comments
         {
             if (ModelState.IsValid)
             {
+                if (User.Identity?.Name == null) return Forbid();
+
+                int userId = int.Parse(User.Identity.Name);
+
                 var created = new CommentsEntity()
                 {
                     Content = item.Content,
                     NewsId = item.NewsId,
-                    AuthorId = 1
+                    AuthorId = userId,
                 };
 
                 _context.Add(created);
@@ -107,6 +111,9 @@ namespace WebApplication1.Comments
         [ProducesResponseType(404)]
         public async Task<IActionResult> Edit(int id, [FromBody] CommentCreateDTO item)
         {
+            if (User.Identity?.Name == null) return Forbid();
+
+            int userId = int.Parse(User.Identity.Name);
             if (_context.News == null)
             {
                 return Problem("Entity set 'DatabaseContext.news'  is null.");

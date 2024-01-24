@@ -72,6 +72,7 @@ namespace WebApplication1.News
         {
             if (ModelState.IsValid)
             {
+               
                 if (User.Identity?.Name == null) return Forbid();
 
                 int userId = int.Parse(User.Identity.Name);

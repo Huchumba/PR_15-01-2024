@@ -119,7 +119,7 @@ namespace WebApplication1.Sessions
         /// <response code="200">Регистрация выполнена.</response>
         /// <response code="400">Некорректный запрос.</response>
         [HttpPost("register")]
-        public async Task<ActionResult<TokenDTO>> Login([FromBody] UserCreateDTO user, [FromHeader(Name = "User-Agent")] string userAgent)
+        public async Task<ActionResult<TokenDTO>> Register([FromBody] UserCreateDTO user, [FromHeader(Name = "User-Agent")] string userAgent)
         {
             if (ModelState.IsValid)
             {

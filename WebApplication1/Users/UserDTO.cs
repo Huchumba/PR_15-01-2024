@@ -19,10 +19,10 @@ namespace WebApplication1.Users
         [Required]
         public string? Family { get; set; }
         [Required]
-       // [EmailAddress]
+        [EmailAddress]
         public string? Email { get; set; }
         [Required]
-        //[MinLength(8)]
+        [RegularExpression(@"^(?=.*[a-z])(?=.*[A-Z])(?=.*\d).{8}$", ErrorMessage = "Пароль должен соответствовать требованиям, включать в себя заглавные и прописные английские буквы, и специальный символ, а также быть минимум 8 символов.")]
         public string? Password { get; set; }
         public string? Patronymic { get; set; }
     }

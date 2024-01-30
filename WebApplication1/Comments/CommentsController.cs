@@ -32,7 +32,7 @@ namespace WebApplication1.Comments
             {
                 return BadRequest();
             }
-            if (_context.Comments == null)
+            if ((await _context.News.Where(n => n.Id == newsId).FirstOrDefaultAsync()) == null)
             {
                 return NotFound();
             }

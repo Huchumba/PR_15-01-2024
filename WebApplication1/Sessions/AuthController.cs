@@ -162,44 +162,66 @@ namespace WebApplication1.Sessions
         /// <summary>
         /// Смена Email
         /// </summary>
-        /// <response code="200">Регистрация выполнена.</response>
+        /// <response code="200">Смена Email выполнена.</response>
         /// <response code="400">Некорректный запрос.</response>
         [HttpPost("email")]
-        public async Task<ActionResult<UserDTO>> ChangeEmail([FromBody] UserDTO user, [FromHeader(Name = "User-Agent")] string userAgent)
+        public async Task<ActionResult<UserDTO>> ChangeEmail([FromBody] EmailChangeDTO user)
         {
             if (ModelState.IsValid)
-            { 
-                var created = new UserEntity
-                {
-                    Email = user.Email,
+            {
+                if (User.Identity?.Name == null) return Forbid();
 
-                };
-
-                _context.Add(created);
+                int userId = int.Parse(User.Identity.Name);
+                var currentUser = await _context.Users.FindAsync(userId);
+                currentUser.Email = user.Email;
                 await _context.SaveChangesAsync();
-
-                SessionEntity session = new()
-                {
-                    UserAgent = userAgent,
-                    User = created,
-                };
-
-                SessionTokenEntity token = new()
-                {
-                    Session = session,
-                    Token = Guid.NewGuid(),
-                    Type = SessionTokenType.Access
-                };
-                ///Добавляем в БД только токен т.к. сессия уже вложена в него
-                _context.Add(token);
-
-                await _context.SaveChangesAsync();
-
+                return _mapper.Map<UserDTO>( currentUser);
             }
-
-
             return BadRequest();
         }
 
+        /// <summary>
+        /// Смена ФИО
+        /// </summary>
+        /// <response code="200">Смена ФИО выполнена.</response>
+        /// <response code="400">Некорректный запрос.</response>
+        [HttpPost("fio")]
+        public async Task<ActionResult<UserDTO>> ChangeFIO([FromBody] ChangeFioDTO user)
+        {
+            if (ModelState.IsValid)
+            {
+                if (User.Identity?.Name == null) return Forbid();
+
+                int userId = int.Parse(User.Identity.Name);
+                var currentUser = await _context.Users.FindAsync(userId);
+                currentUser.Family = user.Family;
+                currentUser.Name = user.Name;
+                currentUser.Patronymic = user.Patronymic;
+                await _context.SaveChangesAsync();
+                return _mapper.Map<UserDTO>(currentUser);
+            }
+            return BadRequest();
+        }
+
+        /// <summary>
+        /// Смена пароля
+        /// </summary>
+        /// <response code="200">Смена пароля выполнена.</response>
+        /// <response code="400">Некорректный запрос.</response>
+        [HttpPost("password")]
+        public async Task<ActionResult<UserDTO>> ChangePassword([FromBody] PasswordChangeDTO user)
+        {
+            if (ModelState.IsValid)
+            {
+                if (User.Identity?.Name == null) return Forbid();
+
+                int userId = int.Parse(User.Identity.Name);
+                var currentUser = await _context.Users.FindAsync(userId);
+                currentUser.Password = user.Password;
+                await _context.SaveChangesAsync();
+                return _mapper.Map<UserDTO>(currentUser);
+            }
+            return BadRequest();
+        }
     }
 }

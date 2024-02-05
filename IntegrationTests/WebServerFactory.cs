@@ -34,7 +34,6 @@ namespace IntegrationTests
                 using var appContext = scope.ServiceProvider.GetRequiredService<DatabaseContext>();
 
                 Utilites.ReinitializeDbForTests(appContext);
-
             });
         }
         protected override void ConfigureClient(HttpClient client)

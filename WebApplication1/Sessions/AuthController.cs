@@ -121,7 +121,8 @@ namespace WebApplication1.Sessions
         [HttpPost("register")]
         public async Task<ActionResult<TokenDTO>> Register([FromBody] UserCreateDTO user, [FromHeader(Name = "User-Agent")] string userAgent)
         {
-            if (ModelState.IsValid)
+            var currentUser = await _context.Users.Where(u => u.Email == user.Email).FirstOrDefaultAsync();
+            if (ModelState.IsValid && currentUser == null)
             {
 
                 var created = new UserEntity
@@ -167,7 +168,8 @@ namespace WebApplication1.Sessions
         [HttpPost("email")]
         public async Task<ActionResult<UserDTO>> ChangeEmail([FromBody] EmailChangeDTO user)
         {
-            if (ModelState.IsValid)
+            var current = await _context.Users.Where(u => u.Email == user.Email).FirstOrDefaultAsync();
+            if (ModelState.IsValid && current == null)
             {
                 if (User.Identity?.Name == null) return Forbid();
 

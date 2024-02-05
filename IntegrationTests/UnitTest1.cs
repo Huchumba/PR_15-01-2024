@@ -1,4 +1,6 @@
 using System.Net;
+using System.Net.Http.Json;
+using WebApplication1.Users;
 using Xunit.Abstractions;
 
 namespace IntegrationTests
@@ -50,6 +52,33 @@ namespace IntegrationTests
             var response = await client.GetAsync("/auth");
             Assert.Equal(HttpStatusCode.Forbidden, response.StatusCode);
         }
-
+        [Fact]
+        public async Task ChangeEmail_Success()
+        {
+            var responce = await _client.PostAsJsonAsync("/auth/email", new EmailChangeDTO() { 
+                Email = "ivanov@example.ru"
+            });
+            responce.EnsureSuccessStatusCode();
+        }
+        [Fact]
+        public async Task ChangePassword_Success()
+        {
+            var responce = await _client.PostAsJsonAsync("/auth/password", new PasswordChangeDTO()
+            {
+                Password = "1qaz!QAZ"
+            });
+            responce.EnsureSuccessStatusCode();
+        }
+        [Fact]
+        public async Task ChangeFio_Success()
+        {
+            var responce = await _client.PostAsJsonAsync("/auth/fio", new ChangeFioDTO()
+            {
+                Name = "string",
+                Family = "string",
+                Patronymic = "string",
+            });
+            responce.EnsureSuccessStatusCode();
+        }
     }
 }
